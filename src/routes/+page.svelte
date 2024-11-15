@@ -14,12 +14,12 @@
             import * as Carousel from "$lib/components/ui/carousel/index.js";
             import type { PageData } from "@/types/+types";
             //export let data: PageData;
-            import Header from "$lib/+header.svelte";
-            import Footer from "$lib/+footer.svelte";
+
+            import '../styles/global.css';
           </script>
 
 <div class="max-h-full">
-<Header />
+
 
 
     <!-- <header class="bg-white shadow">
@@ -44,6 +44,6 @@
           </Carousel.Root>
       </div>
     </main>
-<Footer />
+
   </div>
   

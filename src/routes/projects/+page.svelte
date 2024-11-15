@@ -1,11 +1,10 @@
 <script lang="ts">
 
-    import Header from "$lib/+header.svelte";
-    import Footer from "$lib/+footer.svelte";
+    
     import * as Resizable from "$lib/components/ui/resizable";
 
   </script>
-  <Header />
+
 <h1 class="text-3xl font-bold tracking-tight text-white text-center bg-cyan-600">ETTEPLAN Projekte</h1>
 
    <div class="mx-auto max-w-7xl px-6 py-6 sm:px-6 lg:px-8">
@@ -20,4 +19,3 @@
       </Resizable.PaneGroup>
 
     </div>
-  <Footer />

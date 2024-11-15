@@ -10,14 +10,12 @@
 -->
 <!-- <html class="h-full bg-gray-100"> -->
     <!-- <body class="h-full"> -->
-        <script lang="ts">
-            import * as Carousel from "$lib/components/ui/carousel/index.js";
-            import Header from "$lib/+header.svelte";
-            import Footer from "$lib/+footer.svelte";
-          </script>
+<script lang="ts">
+    import * as Carousel from "$lib/components/ui/carousel/index.js";
+
+  </script>
 
 <div class="max-h-full">
-<Header />
 
 
     <!-- <header class="bg-white shadow">
@@ -39,14 +37,9 @@
           </Carousel.Root>
       </div>
     </main>
-<Footer />
+
   </div>
   <style>
-    .max-h-full {
-      max-height: 100vh;
-    }     
-    main {
-      background-image: -webkit-image-set(url(./src/img/L2EG.jpg) 1x, url(./src/img/L2EG.jpg) 2x);
-    }
+
     
     </style>

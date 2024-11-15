@@ -1,8 +1,7 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import type { Track } from '../../types';
-    import Header from "$lib/+header.svelte";
-    import Footer from "$lib/+footer.svelte";
+
     let tracks: Track[] = [];
     let error: string | null = null;
   
@@ -22,7 +21,7 @@
   </script>
   
   <div class="max-h-full">
-    <Header />
+
     {#if error}
       <p class="error">{error}</p>
     {/if}
@@ -52,5 +51,5 @@
         {/each}
       </tbody>
     </table>
-    <Footer />
+
   </div>

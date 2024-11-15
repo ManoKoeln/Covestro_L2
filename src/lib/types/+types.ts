@@ -17,4 +17,5 @@ export type ProdData = { // statt interface "Type ... =" verwenden
     Group: string;
     row: number;
     column: number;
+    camera: number;
 };

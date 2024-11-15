@@ -7,3 +7,9 @@
             </div>  
         </div>
     </footer>
+    <style>
+      footer {
+  height: 10vh;
+      }
+    </style>
+          }
