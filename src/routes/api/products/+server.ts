@@ -7,9 +7,7 @@ import { DB_PATH_L2 } from '$env/static/private';
 const db = new Database(DB_PATH_L2, { verbose: console.log });
 
 export const GET: RequestHandler = async () => {
-  const sql = `
-SELECT "_rowid_",* FROM "main"."production" LIMIT 49999 OFFSET 0;
-  `;
+  const sql = `SELECT "_rowid_",* FROM "main"."production" LIMIT 49998 OFFSET 0;  `;
   const stmnt = db.prepare(sql);
   const rows = stmnt.all();
   return new Response(JSON.stringify(rows), { status: 200 });

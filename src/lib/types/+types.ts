@@ -18,4 +18,12 @@ export type ProdData = { // statt interface "Type ... =" verwenden
     row: number;
     column: number;
     camera: number;
+    CameraAdress: string;
 };
+export type UserData = {
+    ID: number;
+    Name: string;
+    Password: string;
+    Role: string;
+
+};  

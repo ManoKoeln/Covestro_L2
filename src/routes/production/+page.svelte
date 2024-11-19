@@ -27,7 +27,8 @@
   let inputElement: HTMLInputElement | null = null;
   let l_DialogOpen: boolean = false;
   let a: number | null = null;
-
+  let showCameraPopup = false;
+  let userInput = '';
   let interval: NodeJS.Timeout;
 
   onMount(() => {
@@ -40,10 +41,10 @@
           throw new Error(`Error fetching products: ${response.statusText}`);
         }
         products = await response.json();
-        console.log(products); // Debugging: Log the products to the console
+        // console.log(products); // Debugging: Log the products to the console
       } catch (err) {
         error = (err as Error).message;
-        console.error(err); // Debugging: Log the error to the console
+        console.error(err + "production"+"onMount"); // Debugging: Log the error to the console
       }
     }, 1000);
 
@@ -83,6 +84,25 @@
         console.log(`Clicked on cell at Row: ${row}, Column: ${column}`);
       });
     }
+    // Abrufen des Zustands aus dem LocalStorage
+    const storedShowCameraPopup = localStorage.getItem('showCameraPopup');
+    const storedUserInput = localStorage.getItem('userInput');
+
+    if (storedShowCameraPopup) {
+      showCameraPopup = JSON.parse(storedShowCameraPopup);
+    }
+
+    if (storedUserInput) {
+      userInput = storedUserInput;
+    }
+
+    const video = document.getElementById('video') as HTMLVideoElement;
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
+        video.srcObject = stream;
+        video.play();
+      });
+    }
   });
 
   onDestroy(() => {
@@ -104,6 +124,17 @@
   }
 
   async function saveChanges() {
+    if (selectedProduct?.Fertigungsnummer.length !== 7) {
+      const errorTextElement = document.getElementById('Fehlertext');
+      if (errorTextElement) {
+        errorTextElement.style.display = 'block';
+        setTimeout(() => {
+          errorTextElement.style.display = 'none';
+        }, 3000);
+      }
+      // alert('Fertigungsnummer must be 7 characters long.');
+      return;
+    }
     if (selectedProduct) {
       try {
         const response = await fetch(`/api/products/${selectedProduct.ID}`, {
@@ -123,9 +154,21 @@
       }
     }
     closePopup();
+    showCameraPopup = false;
   }
-  function showcamera (camera: number) {
-    console.log(camera);
+  // function showcamera (camera: number) {
+  //   console.log("Kamera Nr",camera);
+  // }
+  function showcamera() {
+    showCameraPopup = true;
+  }
+
+  function closeCameraPopup() {
+    showCameraPopup = false;
+    // Speichern des Zustands im LocalStorage
+    localStorage.setItem('showCameraPopup', JSON.stringify(showCameraPopup));
+    localStorage.setItem('userInput', userInput);
+    closePopup();
   }
 
   function handleInput(event: Event) {
@@ -152,6 +195,7 @@
 
   function handleDragStart(event: DragEvent, product: ProdData) {
     event.dataTransfer?.setData('text/plain', JSON.stringify(product));
+    console.log('Production Drag started for', product);
   }
 
   function handleDrop(event: DragEvent) {
@@ -162,7 +206,7 @@
       const cellSize = 20; // Size of each cell
       const row = Math.floor(event.offsetY / cellSize);
       const column = Math.floor(event.offsetX / cellSize);
-
+      console.log("production handleDrop",row, column);
       // Update product row and column
       product.row = row;
       product.column = column;
@@ -189,6 +233,16 @@
       console.log('Failed to save product position:', err);
     }
   }
+  function validateFertigungsnummer(event: Event) {
+        const input = event.target as HTMLInputElement;
+        const value = input.value.replace(/\D/g, ''); // Remove non-digit characters
+        if (value.length > 7) {
+          input.value = value.slice(0, 7); // Ensure only up to 7 digits
+        }
+        if (selectedProduct) {
+          selectedProduct.Fertigungsnummer = input.value;
+        }
+      }
 </script>
 
 
@@ -217,6 +271,7 @@
   </div>
 </div>
 {#if selectedProduct}
+<!-- <div class="grid-container"> -->
   <Dialog bind:open={l_DialogOpen} on:close={closePopup}>
     <DialogContent>
       <DialogHeader>
@@ -230,27 +285,46 @@
         <DialogClose on:click={closePopup} />
       </DialogHeader>
       <DialogDescription>
-        <p>Gruppe: {selectedProduct.Group}</p>
-        <p>Ort: {selectedProduct.Place}</p>
-        <!-- <p>Row: {selectedProduct.row}</p> -->
-        <div style="display: flex; align-items: center;">
-          <p>Row: </p>
-          <input type="text" bind:value={selectedProduct.row} bind:this={inputElement} on:input={handlerow} />
-        </div>
-        <div style="display: flex; align-items: center;">
-          <p>Column: </p>
-          <input type="text" bind:value={selectedProduct.column} bind:this={inputElement} on:input={handlecolumn} />
-        </div>
-        <div style="display: flex; align-items: center;">
-          <p>Fertigungsnummer: </p>
-          <input type="text" bind:value={selectedProduct.Fertigungsnummer} bind:this={inputElement} on:input={handleInput} />
-        </div>
-
+        <table>
+          <tbody>
+            <tr>
+              <td>Gruppe:</td>
+              <td><input type="text" style="border :unset;"value={selectedProduct.Group} disabled></td>              
+            </tr>
+            <tr>
+              <td>Ort:</td>
+              <td><input type="text" style="border :unset;" value={selectedProduct.Place} disabled></td>  
+            </tr>
+            <tr>
+              <td>Row:</td>
+              <td>
+                <input type="text" bind:value={selectedProduct.row} bind:this={inputElement} on:input={handlerow} />
+              </td>
+            </tr>
+            <tr>
+              <td>Column:</td>
+              <td>
+                <input type="text" bind:value={selectedProduct.column} bind:this={inputElement} on:input={handlecolumn} />
+              </td>
+            </tr>
+            <tr>
+              <td>Fertigungsnummer:</td>
+              <td>
+                <!-- <input type="text" bind:value={selectedProduct.Fertigungsnummer} bind:this={inputElement} on:input={handleInput} /> -->
+                <input type="number" placeholder="Fertigungsnummer" bind:value={selectedProduct.Fertigungsnummer} bind:this={inputElement}  style="width: 100%; margin-top: 10px;" on:input={validateFertigungsnummer} />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <p id= "Fehlertext" style="color: red; display: none;">Die Fertigungsnummer muss 7 - stellig sein</p>
       </DialogDescription>
       <DialogFooter>
+        
         <Button class="button" on:click={saveChanges}>Save Changes</Button>
+        
         {#if Number(selectedProduct.camera) > 0}
-        <Button class="button" on:click={() => selectedProduct && showcamera(selectedProduct.camera)}>
+        <!-- <Button class="button" on:click={() => selectedProduct && showcamera(selectedProduct.camera)}> -->
+          <Button class="button" on:click={showcamera}>
           Camera {Number(selectedProduct.camera)}
         </Button>
 
@@ -258,9 +332,40 @@
       </DialogFooter>
     </DialogContent>
   </Dialog>
+<!-- </div> -->
 {/if}
 
+{#if showCameraPopup}
+<Dialog bind:open={showCameraPopup} on:close={closeCameraPopup} >
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>
+        <div style="display: flex; align-items: center;">
+          <img class="h-8 w-8" src="/src/img/etteplan-electric-blue-vertical-rgb (3).png" alt="Your Company">
+          <span>&nbsp;&nbsp;&nbsp;</span>
+          <p>Kamera {Number(selectedProduct?.camera)}</p>
+      </div>
+    </DialogTitle>
+      <DialogClose on:click={closeCameraPopup} />
+    </DialogHeader>
+    <DialogDescription>
 
+        <!-- <iframe class="w-full aspect-video hover:aspect-square" src="/src/img/mobile1.mp4" title="Dreambroker Video" ></iframe> -->
+        <iframe class="w-full aspect-video hover:aspect-square" src="/src/img/{selectedProduct?.CameraAdress}" title="Dreambroker Video" ></iframe>
+    </DialogDescription>
+    <DialogFooter>
+  <div style="display: flex; align-items: center;">
+  {#if selectedProduct}
+    <input type="number" placeholder="Fertigungsnummer" bind:value={selectedProduct.Fertigungsnummer} style="width: 100%; margin-top: 10px;" on:input={validateFertigungsnummer} />
+
+  {/if}
+  <span>&nbsp;&nbsp;&nbsp;</span>
+ <Button class="button" on:click={saveChanges}>Save</Button>
+  </div>
+</DialogFooter>
+</DialogContent>
+</Dialog>
+{/if}
 
 <style>
   /* src/routes/+page.svelte.css */
@@ -294,36 +399,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
+   border-right:  blue;
   }
   
   .green {
     background-color: green;
   }
   
-  .popup {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    border: 1px solid black;
-    padding: 20px;
-    z-index: 1000;
-  }
-  
-  .overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 999;
-  }
-  
-  .hidden-border {
-    border: none;
-  }
+
   
   .hover-info {
     background: rgba(0, 0, 0, 0.7);
@@ -333,7 +416,39 @@
     pointer-events: none;
     z-index: 1000;
   }
-  Dialog{
-    background: none;
+  .content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  .camera-container {
+    
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    justify-content: flex-start;
+    height: 80vh;
+    width: 80vw;
+  }
+
+  video {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  input {
+    padding: 10px;
+    font-size: 16px;
+  }
+
+  a {
+    color: blue;
+    text-decoration: underline;
+  }
+  iframe {
+    width: 100%;
+    /* height: 100%; */
   }
 </style>

@@ -67,6 +67,23 @@
     --ring: 212.7 26.8% 83.9%;
   }
 }
+/* Button {
+  background-color: green;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+} */
+input {
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid rgb(0, 17, 255);
+  margin-bottom: 10px;
+  margin-left: 10px;
+  justify-items: center;
+}
+
  
 @layer base {
   * {

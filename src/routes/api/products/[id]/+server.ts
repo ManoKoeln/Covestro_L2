@@ -26,6 +26,32 @@ export const PUT: RequestHandler = async ({ params, request }) => {
     return new Response('Product updated', { status: 200 });
   } catch (error) {
     console.error('Error updating product:', error);
+    console.log('Error updating product:', error);
     return new Response('Internal Server Error', { status: 500 });
   }
 };
+
+// export const PUT: RequestHandler = async ({ params, request }) => {
+//   const id = params.id;
+//   const User = await request.json();
+//   console.log("PUT User = ", User, "ID = ", id);
+
+//   try {
+//     const sql = `
+//       UPDATE Admin
+//       SET Name = $Name, Password = $Password
+//       WHERE ID = $id;
+//     `;
+//     const stmnt = db.prepare(sql);
+//     const result = stmnt.run({ Fertigungsnummer: User.Name,Row: User.Password, id });
+
+//     if (result.changes === 0) {
+//       return new Response('User not found', { status: 404 });
+//     }
+
+//     return new Response('User updated', { status: 200 });
+//   } catch (error) {
+//     console.error('Error updating User:', error);
+//     return new Response('Internal Server Error', { status: 500 });
+//   }
+// };

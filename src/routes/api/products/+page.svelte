@@ -1,8 +1,7 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import type { ProdData } from '@/types/+types';
-    import Header from "$lib/+header.svelte";
-    import Footer from "$lib/+footer.svelte";
+
     let products: ProdData[] = [];
     let error: string | null = null;
   
@@ -13,7 +12,7 @@
           throw new Error(`Error fetching products: ${response.statusText}`);
         }
         products = await response.json();
-        console.log(products); // Debugging: Log the products to the console
+        // console.log(products); // Debugging: Log the products to the console
       } catch (err) {
         error = (err as Error).message;
         console.error(err); // Debugging: Log the error to the console
@@ -31,7 +30,7 @@
             throw new Error(`Error fetching products: ${response.statusText}`);
           }
           products = await response.json();
-          console.log(products); // Debugging: Log the products to the console
+          // console.log(products); // Debugging: Log the products to the console
         } catch (err) {
           error = (err as Error).message;
           console.error(err); // Debugging: Log the error to the console
@@ -47,7 +46,7 @@
   </script>
   
   <div class="max-h-full">
-    <Header />
+
     {#if error}
       <p class="error">{error}</p>
     {/if}
@@ -75,5 +74,4 @@
         {/each}
       </tbody>
     </table>
-    <Footer />
   </div>
