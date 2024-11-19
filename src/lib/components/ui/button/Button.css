@@ -1,0 +1,24 @@
+/* components/ui/Button.css */
+
+.button {
+    background-color: #007bff; /* Primärfarbe */
+    color: white; /* Textfarbe */
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+  }
+  
+  .button:hover {
+    background-color: #0056b3; /* Hover-Farbe */
+  }
+  
+  .button:active {
+    background-color: #004085; /* Aktive Farbe */
+  }
+  
+  .button:disabled {
+    background-color: #cccccc; /* Deaktivierte Farbe */
+    cursor: not-allowed;
+  }
